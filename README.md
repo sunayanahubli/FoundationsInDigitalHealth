@@ -1,1 +1,1 @@
-# FoundationsInDigitakHealth
+# FoundationsInDigitalHealth
