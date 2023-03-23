@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <head>
+  <title>MIMIC-III Discharge Summary Search</title>
+
+</head>
+<body>
+  <div class="container">
+  <h1>MIMIC-III Discharge Summary Search</h1>
+  <form id="search-form">
+    <div>
+      <label for="query">Query:</label>
+      <input type="text" id="query" name="query" placeholder="Enter search keywords">
+    </div>
+    <div>
+    <label for="start_date">Start Date:</label>
+  <input type="text" id="start_date" name="start_date" pattern="\d{4}-\d{2}-\d{2}" placeholder="yyyy-mm-dd">
+</div>
+<div>
+  <label for="end_date">End Date:</label>
+  <input type="text" id="end_date" name="end_date" pattern="\d{4}-\d{2}-\d{2}" placeholder="yyyy-mm-dd">
+</div>
+    
+    <div>
+      <label for="icd_codes">Diagnosis codes:</label>
+      <input type="text" id="icd_codes" name="icd_codes" placeholder="Enter comma-separated codes">
+    </div>
+    
+    <div>
+      <label for="expiry_flag_input">Hospital Expiry Flag</label>
+      <select id="expiry_flag" name="expiry_flag">
+        <option value="Both">No Selection</option>
+        <option value="Died">Patient Died (Flag=1)</option>
+        <option value="Survived">Patient Survived (Flag=0)</option>
+
+      </select>
+    </div>
+    
+    <div>
+      <input type="submit" value="Search">
+    </div>
+  </form>
+
+  </form>
+  <div id="result">
+  </div>
+</div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    $(function() { // Shorthand for $(document).ready()
+      $('#search-form').submit(function(event) {
+        event.preventDefault(); // Prevent the form from submitting normally
+        var query = $('#query').val();
+        var start_date = $('#start_date').val();
+        var end_date = $('#end_date').val();
+        var icd_codes = $('#icd_codes').val();
+        var expiry_flag = $('#expiry_flag').val();
+        $.ajax({
+          url: '/Search',
+          method: 'POST',
+          data: {query: query, expiry_flag: expiry_flag, start_date:start_date, end_date:end_date,icd_codes:icd_codes},
+          success: function(result) {
+            var html = '<table>';
+            
+            html += '<thead><tr><th>ID</th><th>Text</th><th>Expiry Flag</th><th>Category</th><th>Admission ID</th><th>Chart Date</th><th>ICD Codes</th></tr></thead>';
+            html += '<tbody>';
+            $.each(result, function(i, item) {
+              html += '<tr><td>' + item.id + '</td><td>' + item.text + '</td><td>' + item.expiry_flag + '</td><td>' + item.category + '</td><td>' + item.hadm_id + '</td><td>' + item.chartdate + '</td><td>' + item.icd_codes + '</td></tr>';
+            });
+            html += '</tbody>';
+            html += '<caption>Results:'+result[0].Num_results+'<br><br>' + 'Solr Query:'+result[0].solr_query+'<br><br>' + 'Top 10 IDS:'+result[0].id_list+'<br><br>'+'Synonyms: ' + result[0].synonyms + '</caption>';
+            html += '</table>';
+            $('#result').html(html);
+          }
+        });
+      });
+    });
+    </script>
+
+<style>
+  .container {
+display:flex;
+flex-direction: column;
+min-height: 100vh;
+justify-content: center;
+align-items: center;
+padding: 2em;
+box-sizing: border-box;
+}
+
+  /* CSS for the search results table */
+  table {
+    border-collapse: collapse;
+    margin: 1em 0;
+    font-size: 0.9em;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  thead tr {
+    background-color: #009879;
+    color: #ffffff;
+    text-align: left;
+  }
+  
+  th, td {
+    padding: 12px 15px;
+  }
+  
+  tbody tr {
+    border-bottom: 1px solid #dddddd;
+  }
+  
+  tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+  }
+  
+  tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
+  }
+  
+  caption {
+    caption-side: top;
+    margin-top: 30px;
+    font-style: bold;
+    color: blue;
+  }
+  form label {
+display: block;
+margin-top: 1em;
+}
+
+form input[type="text"] {
+padding: 0.5em;
+border-radius: 3px;
+border: 1px solid #ddd;
+font-size: 1em;
+margin-bottom: 1em;
+width: 250px;
+}
+
+form input[type="text"]:invalid {
+border-color: red;
+}
+
+form input[type="text"]:valid {
+border-color: green;
+}
+</style>
+
+ 
+</body>
+
+</html>

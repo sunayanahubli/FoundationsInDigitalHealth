@@ -1,0 +1,14 @@
+'C0437720', 'C0437733', 'C0437737','C0437720'
+'C0686705', 'C0161016', 'C0232070', 'C0238037', 'C0686705'
+'C0042111', 'C0221013', 'C1541840', 'C0042111'
+
+
+Github Link:
+https://github.com/sunayanahubli/Comp5520_FoundationsInDigitalHealth_Projects/tree/main/Project_01
+
+program Usage:
+
+Download and open the Jupyter notebook: UMLS_FindCycles.ipynb
+Connect to the UMass Lowell VPN using Global protect (needed to connect to the UMLS database)
+Run all the cells
+An output file with the Concept codes that form a circle is created in the directory of the notebook
